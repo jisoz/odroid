@@ -1,0 +1,140 @@
+#create virtual env and install requirements
+# # create virtual environment for backend
+# mkdir -p /app/python-venv-s/ && \
+# chown odroid:odroid /app/python-venv-s/ && \
+# python -m venv /app/python-venv-s/notary/ && \
+# source /app/python-venv-s/notary/bin/activate && \
+
+# # install requirements
+# pip install --upgrade pip
+# pip3 install daphne
+# make install
+
+
+# create tenant file for the new office
+# import os
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'notary.settings')
+# import django
+# django.setup()
+
+# from tenant.models import *
+
+# public=Customer.objects.create(
+#     name="main",
+#     address="test",
+#     phone="test",
+#     schema_name="public",
+# )
+# Domain.objects.create(
+#      tenant=public,
+#      domain="local"
+# )
+
+
+# ofce1=Customer.objects.create(
+#     name="ofce1",
+#     address="ofce1",
+#     phone="05433383",
+#     schema_name="ofce1",
+# )
+# Domain.objects.create(
+#     tenant=ofce1,
+#     domain="ofce1.bm.local"
+# )
+
+
+# should create the schema in the postgres docker image
+
+# # to get container id we can execute docker ps
+# docker exec -it CONTAINER_ID /bin/bash
+# psql -U postgres
+# create schema ofce1;
+# exit
+# exit
+# configure backend with postgres
+# source /app/python-venv-s/notary/bin/activate
+# cd /home/odroid/notary/backend/notary
+# git checkout demo
+# mkdir logs
+# touch logs/clients.log
+#make install 
+#pip install --upgrade setuptools wheel
+
+
+# export DATABASE_NAME=postgres
+# export POSTGRES_HOST=localhost
+# export POSTGRES_USER=postgres
+# export POSTGRES_NAME=postgres
+# export POSTGRES_PORT=5432
+# export POSTGRES_PASSWORD=postgres
+# export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/
+# export RESULT_BACKEND_URL=redis://default:redis@localhost:6379/0
+# export REDISIP=localhost
+# export REDIS_PASSWORD=redis
+# export SUFFEX=dev
+# export SCHEMA_NAME=ofce1
+# export MINIO_ROOT_USER=minio
+# export MINIO_ROOT_PASSWORD=bluemintminio
+# export PRODUCTION=True
+# export AWS_STORAGE_BUCKET_NAME=notary
+# export MINIO_API_HOST=http://ofce1.bm.local:9000
+# export MINIO_CLIENT_HOST=ofce1.bm.local:9000
+# export MINIO_STORAGE_USE_HTTPS=False
+# export DEBUG=false
+# export TEMPLATES_CLONE_DEST=contracts/templates
+# export TEMPLATES_BRANCH=main
+# export HOST_SERVER_IP=http://ofce1.bm.local:8999
+# export LOCAL_DRIVE=true
+# export LOCAL_DRIVE_LINK=file:///W
+
+# make setup
+# python tenants-ofce1.py
+# make migrate-tenant
+# make load-static
+# make load-settings
+# make testing-$SCHEMA_NAME
+# create a directory for launching scripts (front back selinon)
+# cd /home/odroid
+# mkdir -p scripts/run
+# create a start script to launch backend in a service
+# tee scripts/run/back.sh <<EOF
+# #!/bin/bash
+# source /app/python-venv-s/notary/bin/activate
+# cd /home/odroid/notary/backend/notary/
+# export DATABASE_NAME=postgres
+# export POSTGRES_HOST=localhost
+# export POSTGRES_USER=postgres
+# export POSTGRES_NAME=postgres
+# export POSTGRES_PORT=5432
+# export POSTGRES_PASSWORD=postgres
+# export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/
+# export RESULT_BACKEND_URL=redis://default:redis@localhost:6379/0
+# export REDISIP=localhost
+# export REDIS_PASSWORD=redis
+# export SUFFEX=dev
+# export PRODUCTION=True
+# export AWS_STORAGE_BUCKET_NAME=notary
+# export MINIO_API_HOST=http://ofce1.bm.local:9000
+# export MINIO_CLIENT_HOST=ofce1.bm.local:9000
+# export MINIO_STORAGE_USE_HTTPS=False
+# export DEBUG=false
+# export TEMPLATES_CLONE_DEST=contracts/templates
+# export TEMPLATES_BRANCH=main
+# export HOST_SERVER_IP=http://ofce1.bm.local:8999
+# export LOCAL_DRIVE=true
+# export LOCAL_DRIVE_LINK=file:///W
+# daphne notary.asgi:application
+# EOF
+# create backend service
+# tee /etc/systemd/system/back.service <<EOF
+# [Unit]
+# Description=My Script Service
+# After=network.target
+# [Service]
+# Type=simple
+# User=odroid
+# ExecStart=bash /home/odroid/scripts/run/back.sh
+# Restart=on-failure
+# [Install]
+# WantedBy=multi-user.target
+# EOF

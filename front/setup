@@ -1,0 +1,113 @@
+mkdir -p /app/front/
+cd /home/odroid/notary/front/notary
+npm install --legacy-peer-deps --parallel
+yarn run build --parallel
+cp -r dist /app/front
+
+
+
+tee /etc/systemd/system/front.service <<EOF
+[Unit]
+Description=My Script Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=bash /home/odroid/scripts/run/front.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+selinon
+should install selinon requirements without environment variables in root user
+sudo su root
+cd /home/odroid/notary/backend/notary
+make install-2
+should create two launching script cz we have two selinon the first is the worker and the second is the dispatcher
+tee scripts/run/selinon0.sh <<EOF
+#!/bin/bash
+cd /home/odroid/notary/backend/notary/
+export DATABASE_NAME=postgres
+export POSTGRES_HOST=localhost
+export POSTGRES_USER=postgres
+export POSTGRES_NAME=postgres
+export POSTGRES_PORT=5432
+export POSTGRES_PASSWORD=postgres
+export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/
+export RESULT_BACKEND_URL=redis://default:redis@localhost:6379/0
+export REDISIP=localhost
+export REDIS_PASSWORD=redis
+export MINIO_API_HOST=http://ofce1.bm.local:9000
+export MINIO_CLIENT_HOST=ofce1.bm.local:9000
+export MINIO_STORAGE_USE_HTTPS=False
+export AWS_STORAGE_BUCKET_NAME=notary
+export TZ=Asia/Beirut
+export SELINON_DISPATCHER=0
+export DEBUG=false
+export LOCAL_DRIVE=true
+export LOCAL_DRIVE_LINK=file:///W
+sed -i "s/127.0.0.1/${REDISIP}/g" workflow/configuration/config/nodes.yaml
+sed -i "s/''/'${REDIS_PASSWORD}'/g" workflow/configuration/config/nodes.yaml
+unoserver & python3 app.py
+EOF
+tee scripts/run/selinon1.sh <<EOF
+#!/bin/bash
+cd /home/odroid/notary/backend/notary/
+export DATABASE_NAME=postgres
+export POSTGRES_HOST=localhost
+export POSTGRES_USER=postgres
+export POSTGRES_NAME=postgres
+export POSTGRES_PORT=5432
+export POSTGRES_PASSWORD=postgres
+export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672/
+export RESULT_BACKEND_URL=redis://default:redis@localhost:6379/0
+export REDISIP=localhost
+export REDIS_PASSWORD=redis
+export SELINON_DISPATCHER=1
+export AWS_STORAGE_BUCKET_NAME=notary
+export TZ=Asia/Beirut
+export DEBUG=false
+export LOCAL_DRIVE=true
+export LOCAL_DRIVE_LINK=file:///W
+sed -i "s/127.0.0.1/${REDISIP}/g" workflow/configuration/config/nodes.yaml
+sed -i "s/''/'${REDIS_PASSWORD}'/g" workflow/configuration/config/nodes.yaml
+python3 app.py
+EOF
+create selinon services
+tee /etc/systemd/system/selinon0.service <<EOF
+[Unit]
+Description=My Script Service
+After=network.target
+[Service]
+Type=simple
+User=odroid
+ExecStart=bash /home/odroid/scripts/run/selinon0.sh
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+EOF
+tee /etc/systemd/system/selinon1.service <<EOF
+[Unit]
+Description=My Script Service
+After=network.target
+[Service]
+Type=simple
+User=odroid
+ExecStart=bash /home/odroid/scripts/run/selinon1.sh
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+EOF
+systemd
+enable and start all created services
+sudo systemctl enable back
+sudo systemctl start back
+sudo systemctl enable front
+sudo systemctl start front
+sudo systemctl enable selinon0
+sudo systemctl start selinon0
+sudo systemctl enable selinon1
+sudo systemctl start selinon1

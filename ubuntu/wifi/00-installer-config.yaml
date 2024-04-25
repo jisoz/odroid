@@ -1,0 +1,8 @@
+network:
+ version: 2 
+ wifis:
+   wlx5c628b4c0b90:
+     access-points:
+       bm-wrt:
+         password: bm808926
+     dhcp4: true

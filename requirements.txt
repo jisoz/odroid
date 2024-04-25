@@ -1,0 +1,11 @@
+#selinon install-2 should be fixed
+django-pghistory-2.8.0
+unoserver-1.5
+
+#no module named numpy subprocess-error 
+pip install --upgrade setuptools wheel
+
+#unoserver.converter.IllegalArgumentException: Unsupported URL <file:///tmp/notary/chft1/contracts/8/output-8.html>: "type detection failed" ./framework/source/loadenv/loadenv.cxx:190
+pgrep soffice.bin
+kill - 9 ..
+#then restart selinon and will work

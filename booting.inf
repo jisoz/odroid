@@ -1,0 +1,22 @@
+The process of booting a computer involves several steps that start when you power on the system. Here's a breakdown of the typical boot process:
+
+1. Power-On Self-Test (POST):
+When you turn on the computer, the hardware components undergo a Power-On Self-Test (POST).
+POST checks essential hardware components like the CPU, RAM, storage devices, and other connected peripherals to ensure they are functioning correctly.
+2. BIOS/UEFI Initialization:
+After the POST, the Basic Input/Output System (BIOS) or Unified Extensible Firmware Interface (UEFI) takes control.
+BIOS/UEFI initializes essential hardware and locates the boot devices (such as hard drives, SSDs, USB drives) specified in the boot order.
+3. Boot Device Selection:
+The BIOS/UEFI checks the boot order sequence specified in its settings. It looks for the bootable devices in the specified order until it finds one with a bootable partition or bootloader.
+4. Bootloader Execution:
+Once a bootable device with a valid bootloader is found, the BIOS/UEFI hands over control to the bootloader.
+The bootloader, such as GRUB (for Linux) or Windows Boot Manager, loads into memory and presents a menu (if configured) allowing the user to select an operating system or configuration to boot.
+5. Loading the Operating System Kernel:
+After the user selects an option or when a default is chosen, the bootloader loads the selected operating system's kernel into memory.
+The kernel initializes drivers, mounts the root file system, and prepares the system for full operation.
+6. Init Process and User Space:
+Once the kernel is loaded, the init process is launched. It's the first user-space process and is responsible for initializing the system services, daemons, and running various startup scripts.
+The init process transitions the system from its initial state to a fully functional state, allowing users to interact with the operating system.
+7. User Login/Interface:
+Finally, the user is presented with a login screen or graphical user interface (GUI), depending on the operating system and its configuration.
+Upon successful login, the user gains access to the desktop environment or command-line interface, ready to use the computer.
